@@ -25,6 +25,7 @@ void Melanger(robot* tab,int nb)
 
 int main(int argc, char** argv)
 {
+
     robot tabRobot[NB_ROBOTS];
 
     for(int i=0; i<NB_ROBOTS; i++)
