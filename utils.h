@@ -22,8 +22,8 @@ typedef struct
     double ecartType;
 }zone;
 
-double calculerMoyenneZone(float* tabZone, int nbRobot);
+double calculerMoyenneZone(zone);
 
-double calculerEcartType(float moyenne);
+double calculerEcartType(double);
 
 #endif //IA_ROBOT_UTILS_H

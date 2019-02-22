@@ -4,12 +4,12 @@
 
 #include "utils.h"
 
-double calculerMoyenneZone(float* tabZone, int nbRobot)
+double calculerMoyenneZone(zone laZone)
 {
 
 }
 
-double calculerEcartType(float moyenne)
+double calculerEcartType(double moyenne)
 {
 
 }
