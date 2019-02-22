@@ -47,7 +47,6 @@ double calculerMoyenneToutesZones(zone* tabZones)
 double calculerEcartTypeToutesZones(zone* tabZones, double moyenneZones)
 {
     double variance;
-    double ecartType;
 
     for(int i=0; i<NB_ZONES; i++)
     {
@@ -55,5 +54,6 @@ double calculerEcartTypeToutesZones(zone* tabZones, double moyenneZones)
         variance += pow(tabZones[i].moyenne - moyenneZones, 2);
     }
 
-    ecartType = sqrt(variance/NB_ZONES);
+    return sqrt(variance/NB_ZONES);
 }
+

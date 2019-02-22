@@ -5,6 +5,7 @@ double vitesses[48] = {1.28156314102564,1.26833525641026,1.29170064102564,1.2545
 
 int main(int argc, char** argv)
 {
+
     robot tabRobot[NB_ROBOTS];
 
     for(int i=0; i<NB_ROBOTS; i++)
