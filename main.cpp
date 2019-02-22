@@ -25,19 +25,27 @@ void Melanger(robot* tab,int nb)
 
 int main(int argc, char** argv)
 {
-
     robot tabRobot[NB_ROBOTS];
+    zone tabZone[NB_ZONES];
 
+    /*
+     * Init du tableau de robots
+     */
     for(int i=0; i<NB_ROBOTS; i++)
     {
         tabRobot[i].numRobot = i + 1;
         tabRobot[i].vitesse = vitesses[i];
     }
 
-    srand(time(NULL));
+    /*
+     * Melange du tableau
+     */
+    srand((unsigned int)time(NULL));
     Melanger(tabRobot, NB_ROBOTS);
 
-    zone tabZone[NB_ZONES];
+    /*
+     * Cration des zones
+     */
     for(int i=0; i<NB_ZONES; i++)
     {
         tabZone[i].tabRobot = (robot*)malloc(NB_ROBOT_PAR_ZONE * sizeof(robot));
@@ -46,4 +54,13 @@ int main(int argc, char** argv)
             tabZone[i].tabRobot[j] = tabRobot[(i * NB_ROBOT_PAR_ZONE) + j];
         }
     }
+
+    //Calcul de la moyenne de la répartition et calcul de l'écart type
+    double moyenne = calculerMoyenneToutesZones(tabZone);
+    double ecartType = calculerEcartTypeToutesZones(tabZone, moyenne);
+
+    //Affichage
+    cout << ecartType << endl;
+
+    return 0;
 }

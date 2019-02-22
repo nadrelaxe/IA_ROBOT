@@ -3,4 +3,4 @@ project(IA_ROBOT)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(IA_ROBOT main.cpp)
+add_executable(IA_ROBOT main.cpp utils.h utils.cpp)

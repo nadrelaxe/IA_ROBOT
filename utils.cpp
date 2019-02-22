@@ -3,11 +3,12 @@
 //
 
 #include "utils.h"
+#include <math.h>
 
 
 double calculerMoyenneZone(zone laZone)
 {
-    double moyenne;
+    double moyenne = 0;
 
     for(int i=0; i<NB_ROBOT_PAR_ZONE; i++)
     {
@@ -21,11 +22,11 @@ double calculerMoyenneZone(zone laZone)
 double calculerEcartTypeZone(zone laZone)
 {
     double moyenne = laZone.moyenne;
-    double variance;
+    double variance = 0;
 
-    for(int i=0; int<NB_ROBOT_PAR_ZONE; i++)
+    for(int i=0; i<NB_ROBOT_PAR_ZONE; i++)
     {
-        variance += pow(laZone.tabRobot[i].vitesse - laZone.moyenne,2);
+        variance += pow(laZone.tabRobot[i].vitesse - moyenne,2);
     }
 
     return sqrt(variance / NB_ROBOT_PAR_ZONE);
@@ -33,7 +34,7 @@ double calculerEcartTypeZone(zone laZone)
 
 double calculerMoyenneToutesZones(zone* tabZones)
 {
-    double moyenneZones;
+    double moyenneZones = 0;
 
     for(int i=0; i<NB_ZONES; i++)
     {
@@ -46,7 +47,7 @@ double calculerMoyenneToutesZones(zone* tabZones)
 
 double calculerEcartTypeToutesZones(zone* tabZones, double moyenneZones)
 {
-    double variance;
+    double variance = 0;
 
     for(int i=0; i<NB_ZONES; i++)
     {

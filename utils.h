@@ -24,10 +24,11 @@ typedef struct
 
 double calculerMoyenneZone(zone);
 
-void calculerEcartTypeZone(zone);
+double calculerEcartTypeZone(zone);
 
 double calculerMoyenneToutesZones(zone*);
 
 double calculerEcartTypeToutesZones(zone*, double);
+
 
 #endif //IA_ROBOT_UTILS_H
