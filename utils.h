@@ -17,7 +17,7 @@ typedef struct
 
 typedef struct
 {
-    char numRobot;
+    robot *tabRobot;
     double moyenne;
     double ecartType;
 }zone;

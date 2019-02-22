@@ -16,6 +16,7 @@ int main(int argc, char** argv)
     zone tabZone[NB_ZONES];
     for(int i=0; i<NB_ZONES; i++)
     {
+        tabZone[i].tabRobot = (robot*)malloc(NB_ROBOT_PAR_ZONE * sizeof(robot));
 
     }
 }
