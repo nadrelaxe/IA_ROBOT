@@ -4,13 +4,137 @@
 #include <ctime>
 #include <fstream>
 #include <sstream>
+#include <time.h>
 #include "utils.h"
 
 using namespace std;
 
-#define PATH "C:\Users\Coren\Downloads\initial.csv"
+#define PATH                    "C:/Users/alexa/Downloads/initial.csv"
+#define NB_RUN_PROGRAMME        10000
+#define NB_RUN_MELANGE_ZONES    1000
 
-//double vitesses[48] = {1.28156314102564,1.26833525641026,1.29170064102564,1.25450416666667,1.42281378205128,1.39077435897436,1.37508525641026,1.10262820512821,1.27651858974359,1.21970865384615,1.38303525641026,1.11068301282051,1.52128878205128,1.39518173076923,1.25415256410256,1.49925288461538,1.26601826923077,1.3676108974359,1.242825,1.27468717948718,1.18235512820513,1.09703846153846,1.4667358974359,1.41578974358974,1.19993108974359,1.23851538461538,1.38222788461538,1.13083717948718,1.2643782051282,1.25529871794872,1.14160769230769,1.34871121794872,1.36339006410256,1.12933429487179,1.21889967948718,1.3537125,1.41010256410256,1.17621570512821,1.38086121794872,1.32788621794872,1.50639455128205,1.11700865384615,1.42255384615385,1.37143846153846,1.43075993589744,1.56781025641026,1.17099487179487,1.3703233974359};
+void Init(robot* robotInit, robot* robotModif);
+void InitTableauRobots(zone* tabZone, robot* tabRobotModif);
+void creationZones(zone* tabZone, robot* tabRobotModif);
+void suppressionZones(zone* tabZone);
+double runPermutations(zone* tabZone);
+
+void Melanger(robot* tab,int nb);
+void EchangeRobotZone(zone* tabZone0, int z1, int r1, int z2, int r2);
+void MelangeEntreZone(zone* tabZone0);
+void lireCSV(const string &chemin, robot* tab);
+int zonePourRobot(zone* tabZone0, int numRobot);
+void ecrireResultatCSV(const string &chemin, robot* tabRobot, zone* tabZone0);
+
+
+int main(int argc, char** argv)
+{
+    robot tabRobotInit[NB_ROBOTS];
+    robot tabRobotModif[NB_ROBOTS];
+    zone tabZone[NB_ZONES];
+    zone meilleurePermutation[NB_ZONES];
+    double ecartType = 0, meilleurEcartType = 1;
+    float temps;
+    clock_t t1 = clock(), t2;
+
+    srand((unsigned int)time(NULL));
+
+    /*
+     * Init des tableaux de robots
+     */
+    Init(tabRobotInit,tabRobotModif);
+
+    /*
+     * Initialisation de la structure pour conserver la meilleur solution
+     */
+    InitTableauRobots(meilleurePermutation, tabRobotModif);
+
+    for(int index = 0; index < NB_RUN_PROGRAMME; index++)
+    {
+        /*
+         * Creation des zones
+         */
+        creationZones(tabZone, tabRobotModif);
+
+        /*
+        * On effectue 1000 permutations aléatoires entre deux zone choisies aléatoirement
+        */
+        ecartType = runPermutations(tabZone);
+
+        if(ecartType < meilleurEcartType)
+        {
+            meilleurEcartType = ecartType;
+            cout << index+1 << " / " << NB_RUN_PROGRAMME << " : " << meilleurEcartType << endl;
+        }
+
+        //Suppression des zones
+        suppressionZones(tabZone);
+
+    }
+
+
+    //ecrireResultatCSV(PATH, tabRobotInit, tabZone);
+
+    t2 = clock();
+    temps = (float)(t2-t1)/CLOCKS_PER_SEC;
+    cout << "Temps d'execution : " << temps << " secondes." << endl;
+
+    return 0;
+}
+
+void Init(robot* robotInit, robot* robotModif)
+{
+    lireCSV(PATH, robotInit);
+    lireCSV(PATH, robotModif);
+}
+
+void InitTableauRobots(zone* tabZone, robot* tabRobotModif)
+{
+    for(int i = 0; i < NB_ZONES; i++)
+    {
+        tabZone[i].tabRobot = (robot*)malloc(NB_ROBOT_PAR_ZONE * sizeof(robot));
+        for(int j = 0; j < NB_ROBOT_PAR_ZONE; j++)
+        {
+            tabZone[i].tabRobot[j] = tabRobotModif[(i * NB_ROBOT_PAR_ZONE) + j];
+        }
+    }
+}
+
+void creationZones(zone* tabZone, robot* tabRobotModif)
+{
+    /*
+     * Melange du tableau
+     */
+    Melanger(tabRobotModif, NB_ROBOTS);
+
+    /*
+     * Creation des zones
+     */
+    InitTableauRobots(tabZone, tabRobotModif);
+}
+
+void suppressionZones(zone* tabZone)
+{
+    /*
+     * Suppression des zones
+     */
+    for(int i=0; i<NB_ZONES; i++)
+    {
+        free(tabZone[i].tabRobot);
+    }
+}
+
+double runPermutations(zone *tabZone)
+{
+    for(int i=0; i<NB_RUN_MELANGE_ZONES; i++)
+    {
+        MelangeEntreZone(tabZone);
+    }
+
+    //Calcul de la moyenne de la répartition et calcul de l'écart type
+    double moyenne = calculerMoyenneToutesZones(tabZone);
+    return calculerEcartTypeToutesZones(tabZone, moyenne);
+}
 
 void Melanger(robot* tab,int nb)
 {
@@ -177,58 +301,4 @@ void ecrireResultatCSV(const string &chemin, robot* tabRobot, zone* tabZone0)
     }
 
     myfile.close();
-}
-
-
-int main(int argc, char** argv)
-{
-    robot tabRobotInit[NB_ROBOTS];
-    robot tabRobotModif[NB_ROBOTS];
-    zone tabZone[NB_ZONES];
-
-    srand((unsigned int)time(NULL));
-
-    /*
-     * Init du tableau de robots
-     */
-    lireCSV("C:/Users/Coren/Downloads/initial.csv", tabRobotInit);
-    lireCSV("C:/Users/Coren/Downloads/initial.csv", tabRobotModif);
-    /*for(int i=0; i<NB_ROBOTS; i++)
-    {
-        tabRobot[i].numRobot = i + 1;
-        tabRobot[i].vitesse = vitesses[i];
-    }*/
-
-    /*
-     * Melange du tableau
-     */
-    Melanger(tabRobotModif, NB_ROBOTS);
-
-    /*
-     * Cration des zones
-     */
-    for(int i=0; i<NB_ZONES; i++)
-    {
-        tabZone[i].tabRobot = (robot*)malloc(NB_ROBOT_PAR_ZONE * sizeof(robot));
-        for(int j = 0; j < NB_ROBOT_PAR_ZONE; j++)
-        {
-            tabZone[i].tabRobot[j] = tabRobotModif[(i * NB_ROBOT_PAR_ZONE) + j];
-        }
-    }
-
-    for(int i=0; i<1000; i++)
-    {
-        MelangeEntreZone(tabZone);
-    }
-
-    //Calcul de la moyenne de la répartition et calcul de l'écart type
-    double moyenne = calculerMoyenneToutesZones(tabZone);
-    double ecartType = calculerEcartTypeToutesZones(tabZone, moyenne);
-
-    //Affichage
-    cout << ecartType << endl;
-
-    ecrireResultatCSV("C:/Users/Coren/Downloads/initial.csv", tabRobotInit, tabZone);
-
-    return 0;
 }
